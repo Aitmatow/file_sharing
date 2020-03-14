@@ -7,7 +7,7 @@ class FileForm(forms.ModelForm):
 
     class Meta:
         model = File
-        exclude = ['']
+        exclude = ['created_by', 'downloaded']
 
 
 class SimpleSearchForm(forms.Form):
