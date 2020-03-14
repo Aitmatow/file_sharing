@@ -25,8 +25,6 @@ class SignUpForm(forms.Form):
         password_2 = self.cleaned_data.get('password_confirm')
         first_name = self.cleaned_data.get('first_name')
         last_name = self.cleaned_data.get('last_name')
-        if first_name == '' and last_name == '':
-            raise ValidationError('One of the first name or last name should be filled', code='name_is_poll')
         if password_1 != password_2:
             raise ValidationError('Passwords do not match.', code='password_do_not_match')
         return self.cleaned_data
