@@ -49,7 +49,9 @@
                           <small class="text-muted">
                           <br>
                               <a href="{% url 'file_detail' file.pk %}" class="btn btn-info" style="width: 40px"><span class="fa fa-info"></span></a>
-                              <a href="{% url 'file_delete' file.pk %}" class="btn btn-info" style="width: 40px"><span class="fa fa-trash"></span></a>
+                               {% if request.user.is_authenticated or has_perms.file.delete_file %}
+                                  <a href="{% url 'file_delete' file.pk %}" class="btn btn-info" style="width: 40px"><span class="fa fa-trash"></span></a>
+                               {% endif %}
                           </small>
                         </div>
                       </div>

@@ -1,5 +1,7 @@
 from urllib.parse import urlencode
 
+from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.models import Permission
 from django.db.models import Q
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import redirect
@@ -81,7 +83,7 @@ class FileCreate(FormView):
         else:
             return self.form_invalid(form)
 
-class FileUpdate(UpdateView):
+class FileUpdate(UserPassesTestMixin, UpdateView):
     template_name = 'file/file_form.html'
     model = File
     form_class = FileForm
@@ -89,10 +91,21 @@ class FileUpdate(UpdateView):
     def get_success_url(self):
         return reverse('file_detail', kwargs={'pk' : self.object.pk})
 
-class FileDelete(DeleteView):
+    def test_func(self):
+        file = File.objects.get(id=self.kwargs['pk'])
+        if (file.created_by == self.request.user) or (self.request.user.has_perm('webapp.change_file')):
+            return self.request.user
+
+class FileDelete(UserPassesTestMixin, DeleteView):
     template_name = 'file/file_delete.html'
     model = File
     success_url = reverse_lazy('file_list')
+
+    def test_func(self):
+        file = File.objects.get(id=self.kwargs['pk'])
+        if (file.created_by == self.request.user) or (self.request.user.has_perm('webapp.delete_file')):
+            return self.request.user
+
 
 class FileDownload(View):
     def get(self, request):

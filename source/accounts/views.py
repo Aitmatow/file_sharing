@@ -60,7 +60,8 @@ class UserDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(UserDetailView, self).get_context_data(**kwargs)
-        context['files'] = File.objects.filter(created_by=self.request.user).order_by('-created_date')
+
+        context['files'] = File.objects.filter(created_by=User.objects.get(id = self.kwargs['pk'])).order_by('-created_date')
         return context
 
 class UsersList(ListView):
