@@ -127,3 +127,10 @@ class FileDownload(View):
         file.downloaded += 1
         file.save()
         return JsonResponse({'status':200})
+
+class PrivateUserDelete(View):
+    def get(self, request):
+        file_id = request.POST.get('file_id')
+        user_id = request.POST.get('user_id')
+
+        return JsonResponse({'status':200})

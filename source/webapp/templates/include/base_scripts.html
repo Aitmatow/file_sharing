@@ -1,6 +1,6 @@
 <script>
+
     function addDowndload(file_id) {
-        console.log(file_id);
         $.ajax({
                     method: 'GET',
                     url: '/file_downloaded',
@@ -10,6 +10,24 @@
                     dataType: 'json',
                     success: function () {
                         console.log(`File ${file_id} is downloaded!`);
+                    }
+        })
+    }
+
+    function deletePrivateUser(file_id, user_id) {
+        console.log(file_id, user_id);
+        $.ajax({
+                    method: 'GET',
+                    url: '/user_private_delete',
+                    data: {
+                        'file_id':file_id,
+                        'user_id':user_id
+                    },
+                    dataType: 'json',
+                    success: function () {
+                        var elem = $(`#private_user_${user_id}`);
+                        console.log(elem);
+                        elem.remove();
                     }
         })
     }

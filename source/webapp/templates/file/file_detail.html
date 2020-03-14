@@ -40,9 +40,9 @@
               </tbody>
               {% for i in file.file_private.all %}
                   <tbody>
-                <tr>
+                <tr id="private_user_{{ i.user.pk }}">
                   <td>{{ i.user }}</td>
-                  <td><button class="btn btn-danger">Удалить</button></td>
+                  <td><button class="btn btn-danger" onclick="deletePrivateUser({{ i.file.pk }}, {{ i.user.pk }})">Удалить</button></td>
                 </tr>
               </tbody>
               {% endfor %}
