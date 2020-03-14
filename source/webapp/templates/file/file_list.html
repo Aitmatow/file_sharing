@@ -12,11 +12,11 @@
                     <div class="col-sm-12">
                         <div class="card">
                         <div class="card-body">
-                          <h5 class="card-title">Создатель:
-                              {% if file.created_by == 'None' %}
-                              <a href="{% url 'accounts:detail' file.created_by.pk %}">{{ file.created_by }}</a>
-                                  {% else %}
-                                  Анономиный
+                          <h5 class="card-title">Автор:
+                              {% if file.created_by %}
+                                  <a href="{% url 'accounts:detail' file.created_by.pk %}">{{ file.created_by }}</a>
+                              {% else %}
+                                  Анонимный
                               {% endif %}
                           </h5>
                             <p class="card-text mt-auto">Описание: {{ file.description }}</p>

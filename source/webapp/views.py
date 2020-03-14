@@ -15,6 +15,7 @@ class FileList(ListView):
     paginate_by = 10
     paginate_orphans = 1
     page_kwarg = 'page'
+    ordering = ['-created_date']
 
     def get(self, request, *args, **kwargs):
         self.form = self.get_search_form()
@@ -33,8 +34,7 @@ class FileList(ListView):
         queryset = super().get_queryset()
         if self.search_value:
             queryset = queryset.filter(
-                Q(created_by__icontains=self.search_value)
-                | Q(description__icontains=self.search_value)
+                Q(description__icontains=self.search_value)
             )
         return queryset
 
@@ -66,6 +66,8 @@ class FileCreate(FormView):
         form = self.get_form(form_class)
         if self.request.user.id == None:
             user = None
+        else:
+            user = self.request.user
         if form.is_valid():
             File.objects.create(
                 file=form.cleaned_data['file'],

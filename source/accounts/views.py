@@ -23,7 +23,7 @@ def login_view(request):
             login(request, user)
             if next_url:
                 return redirect(next_url)
-            return redirect('adme_list')
+            return redirect('file_list')
         else:
             context['next'] = next_url
             context['has_error'] = True
@@ -31,7 +31,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('adme_list')
+    return redirect('file_list')
 
 def register_view(request):
     if request.method == 'GET':
@@ -48,7 +48,7 @@ def register_view(request):
             )
             user.set_password(form.cleaned_data.get('password'))
             user.save()
-            return redirect('adme_list')
+            return redirect('file_list')
         else:
             return render(request, 'register.html', context={'form': form})
 
