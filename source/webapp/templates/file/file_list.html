@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1 class="bg-info text-white text-center">Объявления:</h1>
+    {% csrf_token %}
+    {% include 'partial/simple_search.html' %}
+    {% if is_paginated %}
+        {% include 'partial/pagination.html' %}
+    {% endif %}
+    <div class="card-deck text-center">
+        <div class="row">
+                {% for adme in object_list %}
+                    <div class="col-sm-6">
+                        <div class="card">
+                        <div class="card-body">
+                          <h5 class="card-title">
+                              <a href="{% url 'accounts:detail' adme.created_by.pk %}">{{ adme.created_by }}</a>
+                          </h5>
+                            <p id="number_adme_{{ adme.pk }}"> <button class="btn btn-success" id="number_adme_btn_{{ adme.pk }}" onclick="showNumber({% if adme.phone_number %}{{ adme.phone_number }} {% else %}{{ adme.created_by.profile.get_phone }} {% endif %}, {{ adme.pk }})">Показать номер </button></p>
+                            <p class="card-text mt-auto">Описание: {{ adme.description }}</p>
+                            {% if adme.picture_set.all %}
+                                <img src="{{ adme.picture_set.first.get_image.url }}" class="card-img-top mr-auto" style="height: 300px; width: 300px" alt="{{ image.author }} ">
+                            {% else %}
+                                <img src="/uploads/user_pics/нет-фото-300x300.png" class="img-fluid" alt="{{ product.name }}">
+                            {%endif %}
+                        </div>
+                        <div class="card-footer">
+                          <small class="text-muted">
+                          {% if user.is_authenticated %}
+                              {% if adme.is_fav %}
+                                    <div class="wrapper"><a class="custom_btn_border small_padding hidden" id="addFav_{{ adme.id }}" onclick="addFavorite({{ adme.id }});">В избранное <i class="fa fa-star-o"></i></a></div>
+                                    <div class="wrapper"><a class="custom_btn_border" id="removeFav_{{ adme.id }}" onclick="removeFavorite({{ adme.id }});">Удалить из избранного <i class="fa fa-star"></i></a></div>
+                                {% else %}
+                                    <div class="wrapper"><a class="custom_btn_border small_padding " id="addFav_{{ adme.id }}" onclick="addFavorite({{ adme.id }});">В избранное <i class="fa fa-star-o"></i></a></div>
+                                    <div class="wrapper"><a class="custom_btn_border hidden" id="removeFav_{{ adme.id }}" onclick="removeFavorite({{ adme.id }});">Удалить из избранного <i class="fa fa-star"></i></a></div>
+                              {% endif %}
+                          {% endif %}
+                          <br>
+                              <a href="{% url 'detail_adme' adme.pk %}" onclick="addWatch({{ adme.pk }})" class="btn btn-info" style="width: 40px"><span class="fa fa-info"></span></a>
+                              <a href="{% url 'delete_adme' adme.pk %}" class="btn btn-info" style="width: 40px"><span class="fa fa-trash"></span></a>
+                          </small>
+                        </div>
+                      </div>
+                    </div>
+                {% endfor %}
+        </div>
+    </div>
+{% endblock %}

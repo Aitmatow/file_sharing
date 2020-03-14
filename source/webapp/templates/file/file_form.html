@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Update Article{% endblock %}
+{% block content %}
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}
+        <br>
+        <h1>Добавление</h1>
+    {% for field in form %}
+        <p>
+            <label for="{{ field.id_for_label }}">{{ field.label }}
+            {% if field.field.required %}
+                <span class="form-required">*</span>
+            {% endif %}
+            </label>
+        </p>
+        <p>{{ field }}</p>
+        {% for error in field.errors %}
+            <p class="form-error">{{ error }}</p>
+        {% endfor %}
+    {% endfor %}
+        <input type="submit" class="btn-primary" value="Подтвердить" />
+    </form>
+{% endblock %}
