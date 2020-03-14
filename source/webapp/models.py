@@ -8,3 +8,4 @@ class File(models.Model):
     created_by = models.ForeignKey(User, related_name='files', on_delete=models.CASCADE, null=True, blank=True,
                                    verbose_name='Автор объявления')
     created_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    downloaded = models.IntegerField(default=0, verbose_name='Количество скачиваний')
