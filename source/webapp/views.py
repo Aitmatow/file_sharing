@@ -1,9 +1,12 @@
 from urllib.parse import urlencode
 
 from django.db.models import Q
+from django.http import HttpResponseForbidden, JsonResponse
+from django.shortcuts import redirect
 
-from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, FormView, DeleteView
+from django.urls import reverse_lazy, reverse
+from django.views import View
+from django.views.generic import ListView, DetailView, FormView, DeleteView, UpdateView
 
 from webapp.forms import SimpleSearchForm, FileForm
 from webapp.models import File
@@ -78,7 +81,23 @@ class FileCreate(FormView):
         else:
             return self.form_invalid(form)
 
+class FileUpdate(UpdateView):
+    template_name = 'file/file_form.html'
+    model = File
+    form_class = FileForm
+
+    def get_success_url(self):
+        return reverse('file_detail', kwargs={'pk' : self.object.pk})
+
 class FileDelete(DeleteView):
     template_name = 'file/file_delete.html'
     model = File
     success_url = reverse_lazy('file_list')
+
+class FileDownload(View):
+    def get(self, request):
+        file_id = request.GET.get('file_id')
+        file = File.objects.get(id=file_id)
+        file.downloaded += 1
+        file.save()
+        return JsonResponse({'status':200})

@@ -4,47 +4,25 @@
    <div class="container">
        <div class="card text-center">
           <div class="card-header">
-            Задача
+            Файл
           </div>
           <div class="card-body">
             <p class="card-text">
-              <p>Автор: {{ object.created_by }} </p>
-              <p>Описание : {{ object.description }} </p>
-              <p>{% if adme.phone_number %}Номер : {{ adme.phone_number }} {% else %}Номер: {{ adme.created_by.profile.get_phone }} {% endif %}</p>
-              {% if object.picture_set.all %}
-                  {% for pict in object.picture_set.all %}
-                    <p id="picture_{{ pict.id }}">
-                        <img src="{{pict.get_image.url }}" class="card-img-top mr-auto" style="width: 150px" alt="{{ image.author }} ">
-                      <button class="btn btn-danger" onclick="removePicture({{ pict.id }},{{ adme.id }})">Удалить</button>
-                    </p>
-                  {% endfor %}
+            Автор:
+              {% if object.created_by %}
+                  <a href="{% url 'accounts:detail' object.created_by.pk %}">{{ object.created_by }}</a>
               {% else %}
-                  <img src="/uploads/user_pics/нет-фото-300x300.png" class="img-fluid" alt="{{ product.name }}">
-              {%endif %}
+                  Анонимный
+              {% endif %}
+              <p>Описание : {{ object.description }} </p>
             </p>
-
-            <p>Кол-во просмторов : {{ object.views }} </p>
-          <div class="dropdown">
-                  <button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-secondary">
-                    Добавить фотографию
-                  </button>
-                  <div class="dropdown-menu" aria-labelledby="dLabel">
-                  <form action="{% url 'picture_add' adme.pk %}" method="POST" id="add_comment" enctype="multipart/form-data">
-                    {% include 'partial/issue_form.html' with button_text='Добавить' %}
-                </form>
-              </div>
-
-
+              <p><a class="btn btn-success" href="/uploads/{{ file.file }}">Скачать</a></p>
+              <p><a href="{% url 'file_update' file.pk %}" class="btn btn-primary">Редактировать</a></p>
+              <p><a href="{% url 'file_delete' file.pk %}" class="btn btn-danger">Удалить</a></p>
+            <p>Количество скачиваний : {{ object.downloaded }} </p>
           </div>
           <div class="card-footer text-muted">
-              {% if adme.is_fav %}
-                                <div class="wrapper"><a class="custom_btn_border small_padding hidden" id="addFav_{{ adme.id }}" onclick="addFavorite({{ adme.id }});">В избранное <i class="fa fa-star-o"></i></a></div>
-                                <div class="wrapper"><a class="custom_btn_border" id="removeFav_{{ adme.id }}" onclick="removeFavorite({{ adme.id }});">Удалить из избранного <i class="fa fa-star"></i></a></div>
-                            {% else %}
-                                <div class="wrapper"><a class="custom_btn_border small_padding " id="addFav_{{ adme.id }}" onclick="addFavorite({{ adme.id }});">В избранное <i class="fa fa-star-o"></i></a></div>
-                                <div class="wrapper"><a class="custom_btn_border hidden" id="removeFav_{{ adme.id }}" onclick="removeFavorite({{ adme.id }});">Удалить из избранного <i class="fa fa-star"></i></a></div>
-                          {% endif %}
-              <p>Дата создания : {{ object.create_date }} </p>
+              <p>Дата создания : {{ object.created_date }} </p>
           </div>
         </div>
    </div>

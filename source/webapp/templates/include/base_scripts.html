@@ -1,0 +1,19 @@
+<script>
+    function addDowndload(file_id) {
+        console.log(file_id);
+        $.ajax({
+                    method: 'GET',
+                    url: '/file_downloaded',
+                    data: {
+                        'file_id':file_id
+                    },
+                    dataType: 'json',
+                    success: function () {
+                        console.log(`File ${file_id} is downloaded!`);
+                    }
+        })
+    }
+
+
+
+</script>
