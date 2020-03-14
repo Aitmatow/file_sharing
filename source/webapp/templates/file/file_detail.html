@@ -24,7 +24,7 @@
                   <p><a href="{% url 'file_delete' file.pk %}" class="btn btn-danger">Удалить</a></p>
               {% endif %}
             <p>Количество скачиваний : {{ object.downloaded }} </p>
-          {% if request.user == object.created_by %}
+          {% if request.user == object.created_by or has_perms.file.change_fileprivate%}
               <table class="table table-success">
               <thead>
                 <tr>

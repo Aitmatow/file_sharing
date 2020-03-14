@@ -128,14 +128,19 @@ class FileDownload(View):
         file.save()
         return JsonResponse({'status':200})
 
-class PrivateUserDelete(View):
+class PrivateUserDelete(UserPassesTestMixin, View):
     def post(self, request):
         file = File.objects.get(pk = int(request.POST['file_id']))
         user = User.objects.get(id = int(request.POST['user_id']))
         FilePrivate.objects.filter(file=file, user=user).delete()
         return JsonResponse({'status':'200'})
 
-class PrivateUserAdd(View):
+    def test_func(self):
+        file = File.objects.get(id=self.kwargs['pk'])
+        if (file.created_by == self.request.user) or (self.request.user.has_perm('webapp.change_delete_fileprivate')):
+            return self.request.user
+
+class PrivateUserAdd(UserPassesTestMixin, View):
     def post(self, request):
         file = File.objects.get(pk = int(request.POST['file']))
         user = request.POST['user_name']
@@ -149,3 +154,9 @@ class PrivateUserAdd(View):
         except User.DoesNotExist as e:
             print(e)
             return JsonResponse({'answer':'Нет такого пользователя'})
+
+
+    def test_func(self):
+        file = File.objects.get(id=self.kwargs['pk'])
+        if (file.created_by == self.request.user) or (self.request.user.has_perm('webapp.change_change_fileprivate')):
+            return self.request.user
