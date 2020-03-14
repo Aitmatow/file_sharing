@@ -24,27 +24,29 @@
                   <p><a href="{% url 'file_delete' file.pk %}" class="btn btn-danger">Удалить</a></p>
               {% endif %}
             <p>Количество скачиваний : {{ object.downloaded }} </p>
-          <table class="table table-primary">
+          <table class="table table-success">
               <thead>
                 <tr>
                   <th scope="col">Пользователь</th>
                   <th scope="col">Действие</th>
+                    <th scope="col" style="width: 20%">Сообщение</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="table_{{ object.pk }}">
                 <tr>
-                  <td><input type="text" class="form-control"></td>
-                  <td><button class="btn btn-primary">Добавить</button></td>
-                  <td></td>
+                  <td><input type="text" id="user_name_{{ object.pk }}" class="form-control"></td>
+                  <td><button class="btn btn-primary" onclick="addToPrivate(event, {{ object.pk }})">Добавить </button></td>
+                  <td id="answer"></td>
                 </tr>
               </tbody>
               {% for i in file.file_private.all %}
                   <tbody>
-                <tr id="private_user_{{ i.user.pk }}">
-                  <td>{{ i.user }}</td>
-                  <td><button class="btn btn-danger" onclick="deletePrivateUser({{ i.file.pk }}, {{ i.user.pk }})">Удалить</button></td>
-                </tr>
-              </tbody>
+                    <tr id="private_user_{{ i.user.pk }}">
+                      <td><a href="{% url 'accounts:detail' i.user.pk %}">{{ i.user }}</a> </td>
+                      <td><button class="btn btn-danger" onclick="deletePrivateUser(event, {{ i.file.id }}, {{ i.user.pk }})">Удалить</button></td>
+                      <td></td>
+                    </tr>
+                  </tbody>
               {% endfor %}
             </table>
           </div>

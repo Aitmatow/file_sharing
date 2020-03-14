@@ -1,5 +1,22 @@
 <script>
 
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+
     function addDowndload(file_id) {
         $.ajax({
                     method: 'GET',
@@ -14,22 +31,71 @@
         })
     }
 
-    function deletePrivateUser(file_id, user_id) {
-        console.log(file_id, user_id);
-        $.ajax({
-                    method: 'GET',
-                    url: '/user_private_delete',
-                    data: {
-                        'file_id':file_id,
-                        'user_id':user_id
-                    },
-                    dataType: 'json',
-                    success: function () {
-                        var elem = $(`#private_user_${user_id}`);
-                        console.log(elem);
-                        elem.remove();
+    function deletePrivateUser(event, file_id, user_id) {
+        event.preventDefault();
+            let csrftoken = getCookie('csrftoken');
+            let data = {
+                file_id: file_id,
+                user_id: user_id
+            };
+            $.ajax({
+                        method: 'POST',
+                        url: '/user_private_delete/',
+                        data: data,
+                        dataType: 'json',
+                        headers: {
+                            "X-CSRFToken": csrftoken
+                        },
+                        success: function () {
+                            var answer_elem = $('#answer');
+                            var elem = $(`#private_user_${user_id}`);
+                            elem.remove();
+                            answer_elem.text('Пользователь удален');
+
+                        }
+            })
+    }
+
+    function addToPrivate(event, file_id) {
+            event.preventDefault();
+            let csrftoken = getCookie('csrftoken');
+            let user_input = $(`#user_name_${file_id}`);
+            let user = user_input.val();
+            let data = {
+                file: file_id,
+                user_name: user
+            };
+            $.ajax({
+                url: '/user_private_add/',
+                type: 'POST',
+                data: data,
+                dataType: 'json',
+                headers: {
+                    "X-CSRFToken": csrftoken
+                },
+                success: function (datas) {
+                    var answer_elem = $('#answer');
+                    console.log(datas);
+                    if (datas['answer'] === 'Нет такого пользователя'){
+                        answer_elem.text(datas['answer']);
                     }
-        })
+                    else if (datas['answer'] === 'Пользователь уже существует!')
+                    {
+                        answer_elem.text(datas['answer']);
+                    }
+                    else
+                    {
+                        answer_elem.text(datas['answer']);
+                        var table = $(`#table_${file_id}`);
+                        table.append(`<tr id="private_user_${datas['user_id']}">
+                                          <td><a href="http://localhost:8000/accounts/${datas['user_id']}">${datas['user']}</a></td>
+                                          <td><button class="btn btn-danger" onclick="deletePrivateUser(event, ${datas['file_id']}, ${datas['user_id']})">Удалить</button></td>
+                                          <td></td>
+                                        </tr>`);
+                    }
+                    user_input.val('');
+                }
+            });
     }
 
 

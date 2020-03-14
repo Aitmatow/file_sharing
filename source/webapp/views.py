@@ -1,7 +1,7 @@
 from urllib.parse import urlencode
 
 from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Permission, User
 from django.db.models import Q
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import redirect
@@ -11,7 +11,7 @@ from django.views import View
 from django.views.generic import ListView, DetailView, FormView, DeleteView, UpdateView
 
 from webapp.forms import SimpleSearchForm, FileForm, AnonFileForm
-from webapp.models import File, DEFAULT_PROJECT_STATUS
+from webapp.models import File, DEFAULT_PROJECT_STATUS, FilePrivate
 
 
 class FileList(ListView):
@@ -129,8 +129,23 @@ class FileDownload(View):
         return JsonResponse({'status':200})
 
 class PrivateUserDelete(View):
-    def get(self, request):
-        file_id = request.POST.get('file_id')
-        user_id = request.POST.get('user_id')
+    def post(self, request):
+        file = File.objects.get(pk = int(request.POST['file_id']))
+        user = User.objects.get(id = int(request.POST['user_id']))
+        FilePrivate.objects.filter(file=file, user=user).delete()
+        return JsonResponse({'status':'200'})
 
-        return JsonResponse({'status':200})
+class PrivateUserAdd(View):
+    def post(self, request):
+        file = File.objects.get(pk = int(request.POST['file']))
+        user = request.POST['user_name']
+        try:
+            user_obj = User.objects.get(username=user)
+            file_exists = FilePrivate.objects.get_or_create(file=file, user=user_obj)
+            if file_exists[1] == False:
+                return JsonResponse({'answer': 'Пользователь уже существует!'})
+            else:
+                return JsonResponse({'answer': 'Пользователь успешно добавлен!', 'user' : user_obj.username, 'user_id' : user_obj.id, 'file_id': file.pk})
+        except User.DoesNotExist as e:
+            print(e)
+            return JsonResponse({'answer':'Нет такого пользователя'})
