@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Пользователь{% endblock %}
+{% block menu_links %}
+    {% if user_obj == request.user %}
+        <li class="nav-item active">
+            <a class="nav-link" href="{% url "accounts:update" user_obj.pk %}">Редактировать<span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item active">
+            <a class="nav-link" href="{% url "accounts:password_change" user_obj.pk%}">Смена пароля <span class="sr-only">(current)</span></a>
+        </li>
+    {% endif %}
+{% endblock %}
+{% block content %}
+    <div class="container">
+       <div class="card text-center">
+          <div class="card-header">
+            Личный кабинет
+          </div>
+       <div class="row">
+       <div class="col-sm-4">
+           {% if user_obj.profile.avatar %}
+               <img class="avatar mt-3 mb-3"  src="{{ user_obj.profile.avatar.url }}" width="250" height="250" alt="user picture">
+           {% else %}
+               <img class="avatar mt-3 mb-3"  src="/uploads/user_pics/765-default-avatar.png" width="250" height="250" alt="user picture">
+           {% endif %}
+       </div>
+       <div class="col-sm-8">
+          <div class="card-body">
+            <h5 class="card-title">Имя пользователя: {{ user_obj.username }}</h5>
+            <p class="card-text">
+                <p>Имя: {% if user_obj.first_name %} {{ user_obj.first_name }} {% else %} Нет данных {% endif %}</p>
+                <p>Фамилия: {% if user_obj.last_name %} {{ user_obj.last_name }} {% else %} Нет данных {% endif %}</p>
+                <p>Мобильный номер: {% if user_obj.profile.get_phone %} {{ user_obj.profile.get_phone }} {% else %} Нет данных {% endif %}
+                <p><a class="btn btn-primary" href="{% url 'favorite_admes' %}"> Мои избранные </a></p>
+            </p>
+          </div>
+       </div>
+        </div><div class="card-footer text-muted">
+            <p>Последняя дата активности: {% if user_obj.last_login %}{{ user_obj.last_login }} {% else %} Нет данных {% endif %}</p>
+          </div>
+       </div>
+        <div class="card-deck text-center">
+            {% for adme in user_obj.admes.all|dictsort:"create_date" %}
+                <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">
+                          <a href="{% url 'accounts:detail' adme.created_by.pk %}">{{ adme.created_by }}</a>
+                      </h5>
+                        <p id="number_adme_{{ adme.pk }}"> <button class="btn btn-success" id="number_adme_btn_{{ adme.pk }}" onclick="showNumber({% if adme.phone_number %}{{ adme.phone_number }} {% else %}{{ adme.created_by.profile.get_phone }} {% endif %}, {{ adme.pk }})">Показать номер </button></p>
+                        <p class="card-text mt-auto">Описание: {{ adme.description }}</p>                        {% if adme.picture_set.all %}
+                          <img src="{{ adme.picture_set.first.get_image.url }}" class="card-img-top mr-auto" style="width: 150px" alt="{{ image.author }} ">
+                        {% else %}
+                            <img src="/uploads/user_pics/нет-фото-300x300.png" class="img-fluid" alt="{{ product.name }}">
+                        {%endif %}
+                    </div>
+                    <div class="card-footer">
+                      <small class="text-muted">
+                      {% if user.is_authenticated %}
+                          {% if adme.is_fav %}
+                                <div class="wrapper"><a class="custom_btn_border small_padding hidden" id="addFav_{{ adme.id }}" onclick="addFavorite({{ adme.id }});">В избранное <i class="fa fa-star-o"></i></a></div>
+                                <div class="wrapper"><a class="custom_btn_border" id="removeFav_{{ adme.id }}" onclick="removeFavorite({{ adme.id }});">Удалить из избранного <i class="fa fa-star"></i></a></div>
+                            {% else %}
+                                <div class="wrapper"><a class="custom_btn_border small_padding " id="addFav_{{ adme.id }}" onclick="addFavorite({{ adme.id }});">В избранное <i class="fa fa-star-o"></i></a></div>
+                                <div class="wrapper"><a class="custom_btn_border hidden" id="removeFav_{{ adme.id }}" onclick="removeFavorite({{ adme.id }});">Удалить из избранного <i class="fa fa-star"></i></a></div>
+                          {% endif %}
+                      {% endif %}
+                      <br>
+                          <a href="{% url 'detail_adme' adme.pk %}" onclick="addWatch({{ adme.pk }})" class="btn btn-info" style="width: 40px"><span class="fa fa-info"></span></a>
+                          <a href="{% url 'delete_adme' adme.pk %}" class="btn btn-info" style="width: 40px"><span class="fa fa-trash"></span></a>
+                      </small>
+                    </div>
+                  </div>
+            {% endfor %}
+    </div>
+   </div>
+{% endblock %}

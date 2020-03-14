@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1 class="bg-info text-white text-center">Список пользователей:</h1>
+    {% csrf_token %}
+    {% if is_paginated %}
+        {% include 'partial/pagination.html' %}
+    {% endif %}
+    <div class="card-deck text-center">
+            {% for user in object_list %}
+                <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">{{ user.username }}</h5>
+                    </div>
+                    <div class="card-footer">
+                      <small class="text-muted">
+                          <a href="{% url 'accounts:detail' user.pk %}" class="btn btn-info" style="width: 40px"><span class="fa fa-info"></span></a>
+                      </small>
+                    </div>
+                  </div>
+            {% endfor %}
+    </div>
+{% endblock %}
