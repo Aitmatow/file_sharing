@@ -7,7 +7,7 @@ from django.views.generic import DetailView, UpdateView, ListView
 
 
 from accounts.forms import SignUpForm
-from webapp.models import File
+from webapp.models import File, DEFAULT_PROJECT_STATUS
 
 
 def login_view(request):
@@ -60,8 +60,12 @@ class UserDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(UserDetailView, self).get_context_data(**kwargs)
-
-        context['files'] = File.objects.filter(created_by=User.objects.get(id = self.kwargs['pk'])).order_by('-created_date')
+        cur_user = self.request.user
+        project_author = User.objects.get(id = self.kwargs['pk'])
+        if (cur_user == project_author):
+            context['files'] = File.objects.filter(created_by=project_author).order_by('-created_date')
+        else:
+            context['files'] = File.objects.filter(created_by=project_author, access=DEFAULT_PROJECT_STATUS).order_by('-created_date')
         return context
 
 class UsersList(ListView):

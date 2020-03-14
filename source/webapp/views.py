@@ -10,8 +10,8 @@ from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import ListView, DetailView, FormView, DeleteView, UpdateView
 
-from webapp.forms import SimpleSearchForm, FileForm
-from webapp.models import File
+from webapp.forms import SimpleSearchForm, FileForm, AnonFileForm
+from webapp.models import File, DEFAULT_PROJECT_STATUS
 
 
 class FileList(ListView):
@@ -37,6 +37,9 @@ class FileList(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        queryset = queryset.filter(
+            access = DEFAULT_PROJECT_STATUS
+        )
         if self.search_value:
             queryset = queryset.filter(
                 Q(description__icontains=self.search_value)
@@ -64,24 +67,34 @@ class FileDetail(DetailView):
 class FileCreate(FormView):
     template_name = 'file/file_form.html'
     success_url = reverse_lazy('file_list')
-    form_class = FileForm
 
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         if self.request.user.id == None:
-            user = None
+            if form.is_valid():
+                File.objects.create(
+                    file=form.cleaned_data['file'],
+                    description=form.cleaned_data['description']
+                )
+                return self.form_valid(form)
         else:
-            user = self.request.user
-        if form.is_valid():
-            File.objects.create(
-                file=form.cleaned_data['file'],
-                description=form.cleaned_data['description'],
-                created_by=user
-            )
-            return self.form_valid(form)
+            if form.is_valid():
+                File.objects.create(
+                    file=form.cleaned_data['file'],
+                    description=form.cleaned_data['description'],
+                    created_by=self.request.user,
+                    access=form.cleaned_data['access']
+                )
+                return self.form_valid(form)
+        return self.form_invalid(form)
+
+    def get_form_class(self, form_class=None):
+        if self.request.user.id != None:
+            form = FileForm
         else:
-            return self.form_invalid(form)
+            form = AnonFileForm
+        return form
 
 class FileUpdate(UserPassesTestMixin, UpdateView):
     template_name = 'file/file_form.html'

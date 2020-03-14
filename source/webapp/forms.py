@@ -9,6 +9,11 @@ class FileForm(forms.ModelForm):
         model = File
         exclude = ['created_by', 'downloaded']
 
+class AnonFileForm(forms.ModelForm):
+
+    class Meta:
+        model = File
+        exclude = ['created_by', 'downloaded', 'access']
 
 class SimpleSearchForm(forms.Form):
     search = forms.CharField(max_length=100, required=False, label='Найти')

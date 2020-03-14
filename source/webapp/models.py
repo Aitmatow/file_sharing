@@ -5,6 +5,7 @@ from django.db import models
 DEFAULT_PROJECT_STATUS = 'common'
 PROJECT_STATUS_CHOICES = [(DEFAULT_PROJECT_STATUS, 'Общий'), ('hide', 'Скрытый'), ('private', 'Приватный')]
 
+
 # Create your models here.
 class File(models.Model):
     file = models.FileField(null=False, blank=False, upload_to='user_files', verbose_name='Файл')
