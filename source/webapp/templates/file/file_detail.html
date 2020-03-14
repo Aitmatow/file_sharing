@@ -24,7 +24,8 @@
                   <p><a href="{% url 'file_delete' file.pk %}" class="btn btn-danger">Удалить</a></p>
               {% endif %}
             <p>Количество скачиваний : {{ object.downloaded }} </p>
-          <table class="table table-success">
+          {% if request.user == object.created_by %}
+              <table class="table table-success">
               <thead>
                 <tr>
                   <th scope="col">Пользователь</th>
@@ -49,6 +50,7 @@
                   </tbody>
               {% endfor %}
             </table>
+          {% endif %}
           </div>
           <div class="card-footer text-muted">
               <p>Дата создания : {{ object.created_date }} </p>

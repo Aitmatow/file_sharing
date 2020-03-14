@@ -64,18 +64,6 @@ class FileDetail(DetailView):
         context = super().get_context_data(**kwargs)
         return context
 
-    def get_object(self, queryset=None):
-        file = File.objects.get(pk=self.kwargs['pk'])
-        return file
-
-    def dispatch(self, request, *args, **kwargs):
-        file = self.get_object()
-        if self.request.user == file.created_by or self.request.user in file.file_private.all():
-            return super().dispatch(request, *args, **kwargs)
-        else:
-            raise PermissionDenied
-
-
 class FileCreate(FormView):
     template_name = 'file/file_form.html'
     success_url = reverse_lazy('file_list')
