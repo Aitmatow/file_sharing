@@ -58,6 +58,7 @@ class UserDetailView(DetailView):
     template_name = 'user_detail.html'
     context_object_name = 'user_obj'
 
+
     def get_context_data(self, **kwargs):
         context = super(UserDetailView, self).get_context_data(**kwargs)
         cur_user = self.request.user

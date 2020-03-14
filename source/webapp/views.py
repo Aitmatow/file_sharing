@@ -2,6 +2,7 @@ from urllib.parse import urlencode
 
 from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import Permission, User
+from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import redirect
@@ -62,6 +63,17 @@ class FileDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+    def get_object(self, queryset=None):
+        file = File.objects.get(pk=self.kwargs['pk'])
+        return file
+
+    def dispatch(self, request, *args, **kwargs):
+        file = self.get_object()
+        if self.request.user == file.created_by or self.request.user in file.file_private.all():
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
 
 
 class FileCreate(FormView):
