@@ -15,3 +15,8 @@ class File(models.Model):
     created_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     downloaded = models.IntegerField(default=0, verbose_name='Количество скачиваний')
     access = models.CharField(choices=PROJECT_STATUS_CHOICES, default=DEFAULT_PROJECT_STATUS, verbose_name='Доступ', max_length=20)
+
+
+class FilePrivate(models.Model):
+    file = models.ForeignKey(File, on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
