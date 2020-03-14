@@ -7,6 +7,7 @@ from django.views.generic import DetailView, UpdateView, ListView
 
 
 from accounts.forms import SignUpForm
+from webapp.models import File
 
 
 def login_view(request):
@@ -56,6 +57,11 @@ class UserDetailView(DetailView):
     model = User
     template_name = 'user_detail.html'
     context_object_name = 'user_obj'
+
+    def get_context_data(self, **kwargs):
+        context = super(UserDetailView, self).get_context_data(**kwargs)
+        context['files'] = File.objects.filter(created_by=self.request.user).order_by('-created_date')
+        return context
 
 class UsersList(ListView):
     template_name = 'users_list.html'
