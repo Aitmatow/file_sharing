@@ -24,6 +24,29 @@
                   <p><a href="{% url 'file_delete' file.pk %}" class="btn btn-danger">Удалить</a></p>
               {% endif %}
             <p>Количество скачиваний : {{ object.downloaded }} </p>
+          <table class="table table-primary">
+              <thead>
+                <tr>
+                  <th scope="col">Пользователь</th>
+                  <th scope="col">Действие</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="text" class="form-control"></td>
+                  <td><button class="btn btn-primary">Добавить</button></td>
+                  <td></td>
+                </tr>
+              </tbody>
+              {% for i in file.file_private.all %}
+                  <tbody>
+                <tr>
+                  <td>{{ i.user }}</td>
+                  <td><button class="btn btn-danger">Удалить</button></td>
+                </tr>
+              </tbody>
+              {% endfor %}
+            </table>
           </div>
           <div class="card-footer text-muted">
               <p>Дата создания : {{ object.created_date }} </p>
