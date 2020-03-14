@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, FormView, DeleteView
 
+from webapp.forms import SimpleSearchForm, FileForm
 from webapp.models import File
 
 
@@ -56,25 +57,19 @@ class FileDetail(DetailView):
 
 
 class FileCreate(FormView):
-    template_name = 'adme/adme_form.html'
-    success_url = reverse_lazy('adme_list')
-    form_class = AdmeForm
+    template_name = 'file/file_form.html'
+    success_url = reverse_lazy('file_list')
+    form_class = FileForm
 
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        files = request.FILES.getlist('photo')
         if form.is_valid():
-            adme = Adme.objects.create(
+            File.objects.create(
                 description=form.cleaned_data['description'],
                 phone_number=form.cleaned_data['phone_number'],
                 created_by=self.request.user
             )
-            for f in files:
-                pict = Picture.objects.create(
-                    adme=adme,
-                    picture=f
-                )
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
