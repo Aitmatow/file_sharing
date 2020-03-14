@@ -43,7 +43,7 @@
                           </h5>
                             <p class="card-text mt-auto">Описание: {{ file.description }}</p>
                             <p class="card-text mt-auto">Количество скачиваний: {{ file.downloaded }}</p>
-                            <p><a class="btn btn-success" href="/uploads/{{ file.file }}" onclick="addDowndload({{ file.id }})">Скачать</a></p>
+                            <p><a class="btn btn-success" href="/uploads/{{ file.file }}" onclick="addDowndload(event,{{ file.id }})">Скачать</a></p>
                         </div>
                         <div class="card-footer">
                           <small class="text-muted">

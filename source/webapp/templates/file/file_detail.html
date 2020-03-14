@@ -16,7 +16,7 @@
               {% endif %}
               <p>Описание : {{ object.description }} </p>
             </p>
-              <p><a class="btn btn-success" href="/uploads/{{ file.file }}">Скачать</a></p>
+              <p><a class="btn btn-success" href="/uploads/{{ file.file }}" onclick="addDowndload({{ file.id }})">Скачать</a></p>
             {% if request.user.is_authenticated or has_perms.file.change_file %}
               <p><a href="{% url 'file_update' file.pk %}" class="btn btn-primary">Редактировать</a></p>
           {% endif %}
